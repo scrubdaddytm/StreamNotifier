@@ -74,7 +74,7 @@ public class StreamNotifier implements RequestStreamHandler {
                 stream.getChannel().getDisplayName(),
                 stream.getGame(),
                 stream.getChannel().getStatus(),
-                stream.getChannel().getDisplayName());
+                stream.getChannel().getUrl());
     }
 
 }
