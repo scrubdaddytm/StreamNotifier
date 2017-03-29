@@ -109,9 +109,9 @@
     </build>
 
     <scm>
-        <connection>scm:git:https://github.com/tuckernoia/stream-lambda.git</connection>
-        <url>https://github.com/tuckernoia/stream-lambda</url>
-        <developerConnection>scm:git:https://github.com/tuckernoia/stream-lambda.git</developerConnection>
+        <connection>scm:git:https://github.com/tuckernoia/StreamNotifier.git</connection>
+        <url>https://github.com/tuckernoia/StreamNotifier</url>
+        <developerConnection>scm:git:https://github.com/tuckernoia/StreamNotifier.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
 
