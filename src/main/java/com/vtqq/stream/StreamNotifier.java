@@ -19,19 +19,27 @@ import java.io.OutputStream;
 public class StreamNotifier implements RequestStreamHandler {
 
     private static final String SLACK_AUTH_TOKEN = System.getenv("SLACK_AUTH_TOKEN");
-
-    private static final long LIVE_WINDOW = (DateTimeConstants.MILLIS_PER_MINUTE * 15);
-    private static final String SLACK_CHANNEL_NAME = "strims";
+    private static final String SLACK_CHANNEL_NAME = System.getenv("SLACK_CHANNEL_NAME");
+    private static final String TIMEOUT_MINUTES = System.getenv("TIMEOUT_MINUTES");
 
     private TwitchApi twitchApi;
+    private Long liveWindow;
 
-    public void init() {
+    public void init(LambdaLogger logger) {
         twitchApi = new TwitchApi();
+        try {
+            logger.log(String.format("current timeout is: %s minute(s)", TIMEOUT_MINUTES));
+            liveWindow = Long.parseLong(TIMEOUT_MINUTES) * DateTimeConstants.MILLIS_PER_MINUTE;
+            logger.log(String.format("liveWindow: %d", liveWindow));
+        } catch (NumberFormatException e) {
+            logger.log(String.format("issue formatting timeout string to int: %s\n Defaulting to 1 minute", TIMEOUT_MINUTES));
+            liveWindow = (long) DateTimeConstants.MILLIS_PER_MINUTE;
+        }
     }
 
     public void handleRequest(InputStream inputStream, OutputStream outputStream, Context context) throws IOException {
         LambdaLogger logger = context.getLogger();
-        init();
+        init(logger);
         checkStreams(logger);
     }
 
@@ -56,7 +64,7 @@ public class StreamNotifier implements RequestStreamHandler {
                 long streamLength = DateTime.now().minus(stream.getCreatedAt().getMillis()).getMillis();
                 logger.log(String.format("%s started streaming %d millis ago\n", displayName, streamLength));
 
-                if (streamLength > LIVE_WINDOW) {
+                if (streamLength > liveWindow) {
                     logger.log(String.format("%s has already notified the channel\n", displayName));
                     continue;
                 }
